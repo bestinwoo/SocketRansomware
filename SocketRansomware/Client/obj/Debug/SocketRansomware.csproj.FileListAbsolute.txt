@@ -1,0 +1,10 @@
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\bin\Debug\SocketRansomware.exe.config
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\bin\Debug\SocketRansomware.exe
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\obj\Debug\SocketRansomware.csprojAssemblyReference.cache
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\obj\Debug\SocketRansomware.Form1.resources
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\obj\Debug\SocketRansomware.Properties.Resources.resources
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\obj\Debug\SocketRansomware.csproj.GenerateResource.cache
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\obj\Debug\SocketRansomware.csproj.CoreCompileInputs.cache
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\obj\Debug\SocketRansomware.exe
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\obj\Debug\SocketRansomware.pdb
+C:\Users\SEONGHO\Source\Repos\SocketRansomware\SocketRansomware\bin\Debug\SocketRansomware.pdb

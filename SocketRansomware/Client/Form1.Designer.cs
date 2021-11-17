@@ -279,6 +279,8 @@ namespace SocketRansomware
             this.linkLabel1.TabIndex = 22;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "About bitcoin";
+            this.linkLabel1.VisitedLinkColor = System.Drawing.Color.Cyan;
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // linkLabel2
             // 
@@ -291,6 +293,8 @@ namespace SocketRansomware
             this.linkLabel2.TabIndex = 23;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "How to buy bitcoins?";
+            this.linkLabel2.VisitedLinkColor = System.Drawing.Color.Cyan;
+            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
             // linkLabel3
             // 

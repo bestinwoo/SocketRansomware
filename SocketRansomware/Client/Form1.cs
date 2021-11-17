@@ -69,7 +69,7 @@ namespace SocketRansomware
             }
             else if (duration2 > 0)
             {
-                --duration2;
+                duration2--;
                 lbtimer2.Text = dt.AddSeconds(duration2).ToString("HH:mm:ss");
             }
         }
@@ -78,6 +78,42 @@ namespace SocketRansomware
         {
             tbKey.SelectAll();
             tbKey.Copy();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                VisitLink();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to open link that was clicked.");
+            }
+        }
+
+        private void VisitLink()
+        {
+            linkLabel1.LinkVisited = true;
+            System.Diagnostics.Process.Start("https://en.wikipedia.org/wiki/Bitcoin");
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                VisitLink2();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to open link that was clicked.");
+            }
+        }
+
+        private void VisitLink2()
+        {
+            linkLabel2.LinkVisited = true;
+            System.Diagnostics.Process.Start("https://www.investopedia.com/articles/investing/082914/basics-buying-and-investing-bitcoin.asp");
         }
     }
    

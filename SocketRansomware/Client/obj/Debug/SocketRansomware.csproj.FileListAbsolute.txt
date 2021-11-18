@@ -18,3 +18,13 @@ C:\Users\SEONGHO\Documents\SocketRansomware\SocketRansomware\Client\obj\Debug\So
 C:\Users\SEONGHO\Documents\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.csproj.CoreCompileInputs.cache
 C:\Users\SEONGHO\Documents\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.exe
 C:\Users\SEONGHO\Documents\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.pdb
+F:\SocketRansomware\SocketRansomware\Client\bin\Debug\SocketRansomware.exe.config
+F:\SocketRansomware\SocketRansomware\Client\bin\Debug\SocketRansomware.exe
+F:\SocketRansomware\SocketRansomware\Client\bin\Debug\SocketRansomware.pdb
+F:\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.csprojAssemblyReference.cache
+F:\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.Form1.resources
+F:\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.Properties.Resources.resources
+F:\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.csproj.GenerateResource.cache
+F:\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.csproj.CoreCompileInputs.cache
+F:\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.exe
+F:\SocketRansomware\SocketRansomware\Client\obj\Debug\SocketRansomware.pdb

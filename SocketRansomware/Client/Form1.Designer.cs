@@ -208,6 +208,7 @@ namespace SocketRansomware
             // 
             this.timer1.Enabled = true;
             this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.count_down);
             // 
             // lbtimer1
             // 
@@ -260,9 +261,8 @@ namespace SocketRansomware
             this.lbDate1.ForeColor = System.Drawing.Color.White;
             this.lbDate1.Location = new System.Drawing.Point(88, 224);
             this.lbDate1.Name = "lbDate1";
-            this.lbDate1.Size = new System.Drawing.Size(150, 14);
+            this.lbDate1.Size = new System.Drawing.Size(0, 14);
             this.lbDate1.TabIndex = 20;
-            this.lbDate1.Text = "2021-11-16 22:22:22";
             // 
             // lbDate2
             // 
@@ -271,9 +271,8 @@ namespace SocketRansomware
             this.lbDate2.ForeColor = System.Drawing.Color.White;
             this.lbDate2.Location = new System.Drawing.Point(88, 384);
             this.lbDate2.Name = "lbDate2";
-            this.lbDate2.Size = new System.Drawing.Size(150, 14);
+            this.lbDate2.Size = new System.Drawing.Size(0, 14);
             this.lbDate2.TabIndex = 21;
-            this.lbDate2.Text = "2021-11-16 22:22:22";
             // 
             // linkLabel1
             // 

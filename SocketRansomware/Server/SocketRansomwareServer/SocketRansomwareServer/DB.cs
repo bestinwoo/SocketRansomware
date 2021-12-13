@@ -9,14 +9,15 @@ namespace SocketRansomwareServer
 {
     class DB
     {
-        private static string _server = "localhost";
+        private static string _ddns = "bestinwoo.hopto.org";
+        private static string _localhost = "localhost";
         private static int _port = 3306;
         private static string _database = "client";
         private static string _id = "root";
         private static string _pw = "1111";
 
         static string _connectionAddress = string.Format("Server={0};Port={1};" +
-                "Database={2};Uid={3};Pwd={4}", _server, _port, _database, _id, _pw);
+                "Database={2};Uid={3};Pwd={4}", _localhost, _port, _database, _id, _pw);
 
         public MySqlConnection _connection { get; set; }
 

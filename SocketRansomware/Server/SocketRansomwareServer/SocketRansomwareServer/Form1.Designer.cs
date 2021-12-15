@@ -39,9 +39,10 @@ namespace SocketRansomwareServer
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(33, 49);
+            this.button1.Location = new System.Drawing.Point(38, 61);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(96, 52);
+            this.button1.Size = new System.Drawing.Size(110, 65);
             this.button1.TabIndex = 0;
             this.button1.Text = "서버 열기";
             this.button1.UseVisualStyleBackColor = true;
@@ -55,9 +56,10 @@ namespace SocketRansomwareServer
             this.startDate,
             this.isPayment});
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(171, 28);
+            this.listView1.Location = new System.Drawing.Point(195, 35);
+            this.listView1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(617, 409);
+            this.listView1.Size = new System.Drawing.Size(705, 510);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -84,13 +86,13 @@ namespace SocketRansomwareServer
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(914, 562);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.button1);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Form1";
-            this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
